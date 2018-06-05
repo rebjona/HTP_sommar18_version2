@@ -104,7 +104,7 @@ while (((np.max(T)<Tmin or np.max(T)>Tmax) and nbrIter<=maxIter) or maxAmp>ampLi
     
     #If amplitude is too high, maxAmp is set to amlitude limit
     if (maxAmp>ampLimit):# and np.max(T)<Tmax):
-        print np.max(T)
+        print(np.max(T))
         scaleAmp=(ampLimit/maxAmp)**2
         maxAmp=ampLimit
         scaleTot=scaleTot*(scaleAmp)
@@ -120,10 +120,10 @@ while (((np.max(T)<Tmin or np.max(T)>Tmax) and nbrIter<=maxIter) or maxAmp>ampLi
         u = Function(V)
         solve(a == L, u, solver_parameters={'linear_solver':'gmres'}) #gmres is fast
         T =u.vector().array()
-        print "Tmax:"
-        print np.max(T)
-        print "Scale:"
-        print scaleTot
+        print("Tmax:")
+        print(np.max(T))
+        print("Scale:")
+        print(scaleTot)
         if (np.max(T)<Tmax):
             done = True # exit loop
     
@@ -169,12 +169,12 @@ while (((np.max(T)<Tmin or np.max(T)>Tmax) and nbrIter<=maxIter) or maxAmp>ampLi
         T =u.vector().array()
 
     nbrIter=nbrIter+1
-    print "Tmax:"
-    print np.max(T)
-    print "Scale:"
-    print scaleTot
-    print "MaxAmp:"
-    print maxAmp
+    print("Tmax:")
+    print(np.max(T))
+    print("Scale:")
+    print(scaleTot)
+    print("MaxAmp:")
+    print(maxAmp)
 
     if(done):
         break
@@ -217,18 +217,18 @@ if ((np.max(T)>Tmin and np.max(T)<Tmax and maxAmp<=ampLimit) or maxAmp==ampLimit
     fileAmp.close()
 
     #Print parameters
-    print "Tmax:"
-    print np.max(T)
-    print "Scale:"
-    print scaleTot
-    print "Nbr of iterations:"
-    print nbrIter
-    print "MaxAmp:"
-    print maxAmp
+    print("Tmax:")
+    print(np.max(T))
+    print("Scale:")
+    print(scaleTot)
+    print("Nbr of iterations:")
+    print(nbrIter)
+    print("MaxAmp:")
+    print(maxAmp)
 
     if (np.max(T)>Tmax and ampLimit==maxAmp):
-        print " High temperature. Try to increase the interval [Tmin,Tmax] or try a higher maxIter."
+        print(" High temperature. Try to increase the interval [Tmin,Tmax] or try a higher maxIter.")
 
 else:
-   print "Not enough iterations"
+   print("Not enough iterations")
 

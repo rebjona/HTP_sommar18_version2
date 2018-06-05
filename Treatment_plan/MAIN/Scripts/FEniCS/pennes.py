@@ -216,6 +216,11 @@ if ((np.max(T)>Tmin and np.max(T)<Tmax and maxAmp<=ampLimit) or maxAmp==ampLimit
 
     fileAmp.close()
 
+    # Save the scale factor in a file
+    fileScale=open('../FEniCS_results/scale_factor.txt','w')
+    fileScale.write(str(scaleTot))
+    fileScale.close()
+
     #Print parameters
     print("Tmax:")
     print(np.max(T))

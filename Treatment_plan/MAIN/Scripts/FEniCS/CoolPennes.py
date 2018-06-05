@@ -1,7 +1,7 @@
 #--------------
 #Pseudokod:
 
-#Kör pennes.py för varje behandlingsplan och få tillhörande amplituder.
+#Kör pennes.py för varje behandlingsplan och få tillhörande amplituder. (step 1)
 
 #SAR(x) är nu känt då amplituder är bestämda. Stega med dt i dT=(T_0-T)*c*dt +SAR(x)*dt. Uppdatera T i varje iteration.
 
@@ -33,7 +33,7 @@ def load_data(filename, degree=0):
     
     # Load the .mat file
     f = h5py.File(filename, "r")
-    data = np.array(f.items()[0][1], dtype=float)
+    data = np.array(list(f.items())[0][1], dtype=float) # might need to remove list() when using Python 2?
     f.close()
 
     # Load the intepolation c++ code
@@ -83,10 +83,14 @@ T_out_ht = load_data("../Input_to_FEniCS/bnd_temp_times_ht.mat", 0)
 #-----------------------
 Tmax= 5 # 0 = 37C, 8 if head and neck, 5 if brain
 Tmin= 4.5 # 0 = 37C
-#scale= 1
-maxIter=180
+#scaleLocal=1
+maxTime= 5 # just to try something, change this later
+dt=1 # just to try, change this later
+nbrSteps=0
+maxSteps=5 # just to try, change this later
 #-----------------------
 
+# Read current amplitudes and the amplitude limit, generated in MATLAB
 with open("../Input_to_FEniCS/amplitudes.txt") as file:
     amplitudes = []
     for line in file:
@@ -97,6 +101,11 @@ with open("../Input_to_FEniCS/ampLimit.txt") as file:
     for line in file:
         ampLimit.append(line.rstrip().split(","))
 
+# load the scale of amplitudes and P found when running the original version of Pennes (step 1, i.e pennes.py)
+with open("../FEniCS_results/scale_factor.txt") as file:
+    scaleTotal = file.read()
+    print(scaleTotal)
+
 print("Done loading.")
 
 #Change type of data
@@ -106,6 +115,62 @@ maxAmpl=max(amplitudes)
 maxAmp=maxAmpl[0][0]
 maxAmp=int(maxAmpl[0][0])
 maxAmp=float(maxAmp)
+
+# Get a first estimate of the temperature, using just the original P, i.e without any scaling at all.
+# TODO: Find equation to solve, then uncomment it all
+V = FunctionSpace(mesh, "CG", 1)
+u = TrialFunction(V)
+v = TestFunction(V)
+# Variational formulation but using steps of time instead
+#a= insert LHP here
+#L= insert RHP here
+u=Function(V)
+#solve(a == L, u, solver_parameters={'linear_solver':'gmres'})   #might need to change from gmres to other solver?
+#T =u.vector().array()
+#print("Tmax for time T0:")
+#print(np.max(T))
+
+# Save data in a format readable by matlab
+#Coords = mesh.coordinates()
+#Cells  = mesh.cells()
+#f = h5py.File('../FEniCS_results/temperature_0.h5','w')
+#f.create_dataset(name='Temp', data=T)
+#f.create_dataset(name='P',    data=Coords)
+#f.create_dataset(name='T',    data=Cells)
+# Need a dof(degree of freedom)-map to permutate Temp
+#f.create_dataset(name='Map',  data=dof_to_vertex_map(V))
+#f.close()
+
+
+# Now take steps in time and estimate the temperature for each time, until the full scaling is made.
+while (time<maxTime and nbrSteps<maxSteps and np.max<Tmax)
+    time=time+dt
+    nbrSteps=nbrSteps+1
+
+    V = FunctionSpace(mesh, "CG", 1)
+    u = TrialFunction(V)
+    v = TestFunction(V)
+    # Variational formulation but using steps of time instead
+    #a= insert LHP here
+    #L= insert RHP here
+    u=Function(V)
+    #solve(a == L, u, solver_parameters={'linear_solver':'gmres'})   #might need to change from gmres to other solver?
+    #T =u.vector().array()
+    #print("Tmax for time step number " + nbrSteps)
+    #print(np.max(T))
+
+    if (np.max(T)<Tmax and np.max(T)>Tmin):
+    #If okay temperature then save data for each time step in format readable by MATLAB
+    #Coords = mesh.coordinates()
+    #Cells  = mesh.cells()
+    #f = h5py.File('../FEniCS_results/temperature_0.h5','w')
+    #f.create_dataset(name='Temp', data=T)
+    #f.create_dataset(name='P',    data=Coords)
+    #f.create_dataset(name='T',    data=Cells)
+    # Need a dof(degree of freedom)-map to permutate Temp
+    #f.create_dataset(name='Map',  data=dof_to_vertex_map(V))
+    #f.close()
+
 
 
 

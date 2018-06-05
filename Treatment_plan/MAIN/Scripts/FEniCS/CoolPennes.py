@@ -101,10 +101,12 @@ with open("../Input_to_FEniCS/ampLimit.txt") as file:
     for line in file:
         ampLimit.append(line.rstrip().split(","))
 
+# Behövs ens skalningen? Om inte: ta bort den kodbiten i pennes.py som sparar skalningen i txt-fil
 # load the scale of amplitudes and P found when running the original version of Pennes (step 1, i.e pennes.py)
 with open("../FEniCS_results/scale_factor.txt") as file:
     scaleTotal = file.read()
     print(scaleTotal)
+
 
 print("Done loading.")
 
@@ -143,15 +145,15 @@ u=Function(V)
 
 
 # Now take steps in time and estimate the temperature for each time, until the full scaling is made.
-while (time<maxTime and nbrSteps<maxSteps and np.max<Tmax)
-    time=time+dt
+while (time<maxTime+1 and nbrSteps<maxSteps+1 and np.max<Tmax)
     nbrSteps=nbrSteps+1
+    time= nbrSteps*dt
 
     V = FunctionSpace(mesh, "CG", 1)
     u = TrialFunction(V)
     v = TestFunction(V)
     # Variational formulation but using steps of time instead
-    #a= insert LHP here
+    #a= insert LHP here #TODO få in skalningen från förra körningen här? Stega den också?
     #L= insert RHP here
     u=Function(V)
     #solve(a == L, u, solver_parameters={'linear_solver':'gmres'})   #might need to change from gmres to other solver?
@@ -159,7 +161,7 @@ while (time<maxTime and nbrSteps<maxSteps and np.max<Tmax)
     #print("Tmax for time step number " + nbrSteps)
     #print(np.max(T))
 
-    if (np.max(T)<Tmax and np.max(T)>Tmin):
+    #if (np.max(T)<Tmax and np.max(T)>Tmin):
     #If okay temperature then save data for each time step in format readable by MATLAB
     #Coords = mesh.coordinates()
     #Cells  = mesh.cells()
@@ -170,6 +172,8 @@ while (time<maxTime and nbrSteps<maxSteps and np.max<Tmax)
     # Need a dof(degree of freedom)-map to permutate Temp
     #f.create_dataset(name='Map',  data=dof_to_vertex_map(V))
     #f.close()
+    #print("saved T for time: ")
+    #print(time)
 
 
 

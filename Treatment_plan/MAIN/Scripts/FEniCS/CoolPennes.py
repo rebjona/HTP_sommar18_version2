@@ -1,15 +1,15 @@
 #--------------
-Pseudokod:
+#Pseudokod:
 
-Kör pennes.py för varje behandlingsplan och få tillhörande amplituder.
+#Kör pennes.py för varje behandlingsplan och få tillhörande amplituder.
 
-SAR(x) är nu känt då amplituder är bestämda. Stega med dt i dT=(T_0-T)*c*dt +SAR(x)*dt. Uppdatera T i varje iteration.
+#SAR(x) är nu känt då amplituder är bestämda. Stega med dt i dT=(T_0-T)*c*dt +SAR(x)*dt. Uppdatera T i varje iteration.
 
 # Lägg till data för värmepermittivitet och/eller kapacitet för varje rumskoordinat x. Prio 2 efter att ha löst homogenfall?
 
-Bryt om T>5 i någon punkt (även in tumören?) Spara T-matris.
+#Bryt om T>5 i någon punkt (även in tumören?) Spara T-matris.
 
-Byt plan, utgå ifrån gammal T-matris. Stega med dt i dT=(T_0-T)*c*dt +SAR(x)*dt.
+#Byt plan, utgå ifrån gammal T-matris. Stega med dt i dT=(T_0-T)*c*dt +SAR(x)*dt.
 
 # Eventuellt pausa för att låta allting kylas ned? Om T inte får vara högre än 5 i tumören kan detta ge bättre T50 samtidigt som eventuella hot spots motverkas.
 
@@ -106,6 +106,8 @@ maxAmpl=max(amplitudes)
 maxAmp=maxAmpl[0][0]
 maxAmp=int(maxAmpl[0][0])
 maxAmp=float(maxAmp)
+
+
 
 
 

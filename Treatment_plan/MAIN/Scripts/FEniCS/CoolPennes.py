@@ -153,7 +153,7 @@ while (time<maxTime+1 and nbrSteps<maxSteps+1 and np.max<Tmax)
     u = TrialFunction(V)
     v = TestFunction(V)
     # Variational formulation but using steps of time instead
-    #a= insert LHP here #TODO få in skalningen från förra körningen här? Stega den också?
+    #a= insert LHP here #TODO få in skalningen från förra körningen här? Stega den också? Eller inte när det är samma P hela tiden
     #L= insert RHP here
     u=Function(V)
     #solve(a == L, u, solver_parameters={'linear_solver':'gmres'})   #might need to change from gmres to other solver?

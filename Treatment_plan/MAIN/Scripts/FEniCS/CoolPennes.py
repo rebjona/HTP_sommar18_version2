@@ -101,6 +101,9 @@ with open("../Input_to_FEniCS/ampLimit.txt") as file:
     for line in file:
         ampLimit.append(line.rstrip().split(","))
 
+# Read old T, which is the initial condition used TODO
+
+
 # Behövs ens skalningen? Om inte: ta bort den kodbiten i pennes.py som sparar skalningen i txt-fil
 # load the scale of amplitudes and P found when running the original version of Pennes (step 1, i.e pennes.py)
 with open("../FEniCS_results/scale_factor.txt") as file:
@@ -123,10 +126,18 @@ maxAmp=float(maxAmp)
 V = FunctionSpace(mesh, "CG", 1)
 u = TrialFunction(V)
 v = TestFunction(V)
+
 # Variational formulation but using steps of time instead
 #a= insert LHP here
 #L= insert RHP here
 u=Function(V)
+
+#Initial condition TODO
+#class InitialCondition(Expression):
+#   def eval_cell(self, value, x, ufc_cell) # ev byta denna rad?
+# TODO
+#u.interpolate(InitialCondition())
+
 #solve(a == L, u, solver_parameters={'linear_solver':'gmres'})   #might need to change from gmres to other solver?
 #T =u.vector().array()
 #print("Tmax for time T0:")

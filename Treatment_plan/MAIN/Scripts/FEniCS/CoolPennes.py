@@ -80,6 +80,25 @@ w_c_b    = load_data("../Input_to_FEniCS/perfusion_heatcapacity.mat")
 alpha    = load_data("../Input_to_FEniCS/bnd_heat_transfer.mat", 0)
 T_out_ht = load_data("../Input_to_FEniCS/bnd_temp_times_ht.mat", 0)
 
+f = h5py.File('../FEniCS_results/temperature.h5','w')
+
+    f.create_dataset(name='Temp', data=T)
+    f.create_dataset(name='P',    data=Coords)
+    f.create_dataset(name='T',    data=Cells)
+    # Need a dof(degree of freedom)-map to permutate Temp
+    f.create_dataset(name='Map',  data=dof_to_vertex_map(V))
+
+    f.close()
+
+print('Importing temperature matrixes...')
+with h5py.File("../FEniCS_results/temperature.h5",'r') as hdf:
+	print('List of datasets; \n')
+	data=hdf.get('Temp')
+	Temp=np.array(data)
+	
+	
+	
+	
 #-----------------------
 Tmax= 5 # 0 = 37C, 8 if head and neck, 5 if brain
 Tmin= 4.5 # 0 = 37C

@@ -103,10 +103,9 @@ with h5py.File("../FEniCS_results/temperature.h5",'r') as hdf:
 Tmax= 5 # 0 = 37C, 8 if head and neck, 5 if brain
 Tmin= 4.5 # 0 = 37C
 #scaleLocal=1
-maxTime= 5 # just to try something, change this later
-dt=1 # just to try, change this later
-nbrSteps=0
-maxSteps=5 # just to try, change this later
+Time=10 # just to try something, change this later
+dt=1 # just to try something, change this later
+numSteps=Time/dt
 #-----------------------
 
 # Read current amplitudes and the amplitude limit, generated in MATLAB
@@ -152,58 +151,44 @@ v = TestFunction(V)
 u=Function(V)
 
 #Initial condition TODO
-#class InitialCondition(Expression):
-#   def eval_cell(self, value, x, ufc_cell) # ev byta denna rad?
-# TODO
-#u.interpolate(InitialCondition())
+#u_IC= Expression('insert eq here etc', t=0)
+u_n= interpolate(u_IC,V)
 
-#solve(a == L, u, solver_parameters={'linear_solver':'gmres'})   #might need to change from gmres to other solver?
-#T =u.vector().array()
-#print("Tmax for time T0:")
-#print(np.max(T))
-
-# Save data in a format readable by matlab
-#Coords = mesh.coordinates()
-#Cells  = mesh.cells()
-#f = h5py.File('../FEniCS_results/temperature_0.h5','w')
-#f.create_dataset(name='Temp', data=T)
-#f.create_dataset(name='P',    data=Coords)
-#f.create_dataset(name='T',    data=Cells)
-# Need a dof(degree of freedom)-map to permutate Temp
-#f.create_dataset(name='Map',  data=dof_to_vertex_map(V))
-#f.close()
-
+#Define variational formulation to solve
+#F= insert eq here
+#a,L= lhs(F), rhs(F)
 
 # Now take steps in time and estimate the temperature for each time, until the full scaling is made.
-while (time<maxTime+1 and nbrSteps<maxSteps+1 and np.max<Tmax)
-    nbrSteps=nbrSteps+1
-    time= nbrSteps*dt
+t=0
+for n in range(numSteps)
+    # Update time
+    t +=dt
+    u_IC.t=t
 
-    V = FunctionSpace(mesh, "CG", 1)
-    u = TrialFunction(V)
-    v = TestFunction(V)
-    # Variational formulation but using steps of time instead
-    #a= insert LHP here #TODO få in skalningen från förra körningen här? Stega den också? Eller inte när det är samma P hela tiden
-    #L= insert RHP here
-    u=Function(V)
-    #solve(a == L, u, solver_parameters={'linear_solver':'gmres'})   #might need to change from gmres to other solver?
+    # Solve the system
+    #solve(a == L, u, solver_parameters={'linear_solver':'gmres'}) #might need to change from gmres to other solver?
+
+    # Print the highest temperature obtained in this time step
     #T =u.vector().array()
-    #print("Tmax for time step number " + nbrSteps)
+    #print("Tmax for time step number " + t/dt)
     #print(np.max(T))
 
+    # If okay temperature then save data for each time step in format readable by MATLAB
     #if (np.max(T)<Tmax and np.max(T)>Tmin):
-    #If okay temperature then save data for each time step in format readable by MATLAB
     #Coords = mesh.coordinates()
     #Cells  = mesh.cells()
-    #f = h5py.File('../FEniCS_results/temperature_0.h5','w')
+    # Index for this time step, should be included in the name of the file
+    #index = t/dt
+    #f = h5py.File('../FEniCS_results/temperature_' + index +'.h5','w')
     #f.create_dataset(name='Temp', data=T)
     #f.create_dataset(name='P',    data=Coords)
     #f.create_dataset(name='T',    data=Cells)
     # Need a dof(degree of freedom)-map to permutate Temp
     #f.create_dataset(name='Map',  data=dof_to_vertex_map(V))
     #f.close()
-    #print("saved T for time: ")
-    #print(time)
+    #print("saved T for step: ")
+    #print(index)
+
 
 
 

@@ -132,17 +132,14 @@ V = FunctionSpace(mesh, "CG", 1)
 u = TrialFunction(V)
 v = TestFunction(V)
 
-# Variational formulation but using steps of time instead
-#a= insert LHP here
-#L= insert RHP here
 u=Function(V)
 
-#Initial condition TODO
-u_IC= Expression('', t=0)
+#Initial condition
+T=Temp
+u_IC= Expression('u=T', u=u, T=T, t=0)
 u_n=interpolate(u_IC,V)
 
 # Define variational formulation to solve
-T=Temp
 f=P-w_c_b*u
 F= alpha*u*v*dx + dt*k_tis*dot(grad(u), grad(v))*dx - (u_n + dt*f)*v*dx + T_out_ht*v*ds
 a,L = lhs(F), rhs(F)
@@ -169,13 +166,13 @@ for n in range(numSteps):
 
         # Index for this time step should be included in the name for the temperature file
         index=t/dt
-        f = h5py.File('../FEniCS_results/temperature_'+ index + '.h5','w')
-        f.create_dataset(name='Temp', data=T)
-        f.create_dataset(name='P',    data=Coords)
-        f.create_dataset(name='T',    data=Cells)
+        #f = h5py.File('../FEniCS_results/temperature_'+ index + '.h5','w')
+        #f.create_dataset(name='Temp', data=T)
+        #f.create_dataset(name='P',    data=Coords)
+        #f.create_dataset(name='T',    data=Cells)
         # Need a dof(degree of freedom)-map to permutate Temp
-        f.create_dataset(name='Map',  data=dof_to_vertex_map(V))
-        f.close()
+        #f.create_dataset(name='Map',  data=dof_to_vertex_map(V))
+        #f.close()
         print("saved T for step: ")
         print(index)
 

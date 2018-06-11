@@ -135,9 +135,25 @@ v = TestFunction(V)
 u=Function(V)
 
 #Initial condition
-T=Temp
-u_IC= Expression('u=T', u=u, T=T, t=0)
-u_n=interpolate(u_IC,V)
+#u_IC= Expression('Temp',Temp = Temp,  t=0)
+#u_n=interpolate(u_IC,V)
+
+# Alternaative to IC
+class InitialConditions(Expression):
+    def _init_(self):
+        self.degree=0
+    
+    def eval(self, values, x):
+        self.degree=0
+        for i in range(78105):
+            values[i]= Temp[i]
+
+    def value_shape(self):
+        return (78105,)
+
+u_init=InitialConditions()
+u_n.interpolate(u_init)
+    
 
 # Define variational formulation to solve
 f=P-w_c_b*u
@@ -166,16 +182,15 @@ for n in range(numSteps):
 
         # Index for this time step should be included in the name for the temperature file
         index=t/dt
-        #f = h5py.File('../FEniCS_results/temperature_'+ index + '.h5','w')
-        #f.create_dataset(name='Temp', data=T)
-        #f.create_dataset(name='P',    data=Coords)
-        #f.create_dataset(name='T',    data=Cells)
+        f = h5py.File('../FEniCS_results/temperature_'+ index + '.h5','w')
+        f.create_dataset(name='Temp', data=T)
+        f.create_dataset(name='P',    data=Coords)
+        f.create_dataset(name='T',    data=Cells)
         # Need a dof(degree of freedom)-map to permutate Temp
-        #f.create_dataset(name='Map',  data=dof_to_vertex_map(V))
-        #f.close()
+        f.create_dataset(name='Map',  data=dof_to_vertex_map(V))
+        f.close()
         print("saved T for step: ")
         print(index)
-
 
 
 

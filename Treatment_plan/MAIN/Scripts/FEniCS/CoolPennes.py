@@ -109,8 +109,6 @@ with open("../Input_to_FEniCS/ampLimit.txt") as file:
     for line in file:
         ampLimit.append(line.rstrip().split(","))
 
-# Read old T, which is the initial condition used TODO
-
 
 # Behövs ens skalningen? Om inte: ta bort den kodbiten i pennes.py som sparar skalningen i txt-fil
 # load the scale of amplitudes and P found when running the original version of Pennes (step 1, i.e pennes.py)
@@ -130,7 +128,6 @@ maxAmp=int(maxAmpl[0][0])
 maxAmp=float(maxAmp)
 
 # Get a first estimate of the temperature, using just the original P, i.e without any scaling at all.
-# TODO: Find equation to solve, then uncomment it all
 V = FunctionSpace(mesh, "CG", 1)
 u = TrialFunction(V)
 v = TestFunction(V)
@@ -145,12 +142,14 @@ u_IC= Expression('', t=0)
 u_n=interpolate(u_IC,V)
 
 # Define variational formulation to solve
-F=
+T=Temp
+f=P-w_c_b*u
+F= alpha*u*v*dx + dt*k_tis*dot(grad(u), grad(v))*dx - (u_n + dt*f)*v*dx + T_out_ht*v*ds
 a,L = lhs(F), rhs(F)
 
 # Now take steps in time and estimate the temperature for each time, until the full scaling is made.
 t=0
-for n in range(numSteps)
+for n in range(numSteps):
     # Update time
     t += dt
     u_IC.t=t
@@ -165,20 +164,20 @@ for n in range(numSteps)
 
     # If okay temperature then save data for each time step in format readable by MATLAB
     if (np.max(T)<Tmax and np.max(T)>Tmin):
-    Coords = mesh.coordinates()
-    Cells  = mesh.cells()
+        Coords = mesh.coordinates()
+        Cells  = mesh.cells()
 
-    # Index for this time step should be included in the name for the temperature file
-    index=t/dt
-    f = h5py.File('../FEniCS_results/temperature_'+ index + '.h5','w')
-    f.create_dataset(name='Temp', data=T)
-    f.create_dataset(name='P',    data=Coords)
-    f.create_dataset(name='T',    data=Cells)
-    # Need a dof(degree of freedom)-map to permutate Temp
-    f.create_dataset(name='Map',  data=dof_to_vertex_map(V))
-    f.close()
-    print("saved T for step: ")
-    print(index)
+        # Index for this time step should be included in the name for the temperature file
+        index=t/dt
+        f = h5py.File('../FEniCS_results/temperature_'+ index + '.h5','w')
+        f.create_dataset(name='Temp', data=T)
+        f.create_dataset(name='P',    data=Coords)
+        f.create_dataset(name='T',    data=Cells)
+        # Need a dof(degree of freedom)-map to permutate Temp
+        f.create_dataset(name='Map',  data=dof_to_vertex_map(V))
+        f.close()
+        print("saved T for step: ")
+        print(index)
 
 
 

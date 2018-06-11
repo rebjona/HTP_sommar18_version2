@@ -83,13 +83,10 @@ T_out_ht = load_data("../Input_to_FEniCS/bnd_temp_times_ht.mat", 0)
 
 print('Importing temperature matrixes...')
 with h5py.File("../FEniCS_results/temperature.h5",'r') as hdf:
-	data=hdf.get('Temp')
-	Temp=np.array(data)
+	Temp=hdf.get('Temp')
+	Temp=np.array(Temp)
 	print('Shape of Temp \n', Temp.shape)
 	f=h5py.File("../FEniCS_results/temperature.h5",'r')
-	f.close()
-	
-	
 	
 	
 #-----------------------

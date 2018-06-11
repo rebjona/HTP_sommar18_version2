@@ -64,8 +64,8 @@ alpha    = load_data("../Input_to_FEniCS/bnd_heat_transfer.mat", 0)
 T_out_ht = load_data("../Input_to_FEniCS/bnd_temp_times_ht.mat", 0)
 
 #-----------------------
-Tmax= 8 # 0 = 37C, 8 if head and neck, 5 if brain
-Tmin= 7.5 # 0 = 37C
+Tmax= 5 # 0 = 37C, 8 if head and neck, 5 if brain
+Tmin= 4.5 # 0 = 37C
 #scale= 1
 maxIter=180
 #-----------------------

@@ -75,6 +75,8 @@ mesh = Mesh('../Input_to_FEniCS/mesh.xml')
 print('Importing material properties...')
 T_b = Constant(0.0) # Blood temperature relative body temp
 P        = load_data("../Input_to_FEniCS/P.mat")
+#P2        = load_data("../Input_to_FEniCS/P2.mat")
+#P3        = load_data("../Input_to_FEniCS/P3.mat")
 k_tis    = load_data("../Input_to_FEniCS/thermal_cond.mat")
 w_c_b    = load_data("../Input_to_FEniCS/perfusion_heatcapacity.mat")
 alpha    = load_data("../Input_to_FEniCS/bnd_heat_transfer.mat", 0)
@@ -93,8 +95,8 @@ with h5py.File("../FEniCS_results/temperature.h5",'r') as hdf:
 Tmax= 5 # 0 = 37C, 8 if head and neck, 5 if brain
 Tmin= 4.5 # 0 = 37C
 #scaleLocal=1
-Time=10
-dt=1
+Time=60*6
+dt=60
 numSteps=Time/dt
 #-----------------------
 
@@ -116,7 +118,6 @@ with open("../FEniCS_results/scale_factor.txt") as file:
     scaleTotal = file.read()
     print(scaleTotal)
 
-
 print("Done loading.")
 
 #Change type of data
@@ -131,49 +132,22 @@ maxAmp=float(maxAmp)
 V = FunctionSpace(mesh, "CG", 1)
 u = TrialFunction(V)
 v = TestFunction(V)
-#u=Function(V)
 
-# Exemplets IC
-a=3
-b=1.2
-u_IC= Expression('1+x[0]*x[0]+a*x[1]*x[1]+b*t', degree=2, a=a, b=b, t=0)
-u_n=interpolate(u_IC, V)
 #Initial condition
-#u_IC= Expression('P-w_c_b*Temp', P=P, Temp=Temp, w_c_b=w_c_b,  t=0)
-#zeros_IC=np.zeros(78206)
-#z=str(zeros_IC)
-#u_IC= Expression(z, t=0, degree=0)
-#u_n=interpolate(u_IC,V)
+u_IC= Expression("0", t=0, degree=1)
+u_n=interpolate(u_IC,V)
 
-# Alternative to IC
-#class InitialConditions(Expression):
-#    def _init_(self):
-#        self.degree=0
-#
-#    def eval(self, values, x):
-#        self.degree=0
-#        for i in range(78206):
-#           values[i]= Temp[i]
-#
-#    def value_shape(self):
-#        return (78206,)
-#
-#u_init=InitialConditions(degree=0)
-#u_n=interpolate(u_init,V)
-
-# Alternative 2
-#u_IC=Temp
-#u_n=Temp
-# Define variational formulation to solve
-#f=P-w_c_b*u
-
-F=alpha*u*v*dx + dt*k_tis*dot(grad(u), grad(v))*dx - (u_n + dt*(P-w_c_b*u))*v*dx + T_out_ht*v*ds
+F=alpha*u*v*ds + v*u*dx + dt*k_tis*dot(grad(u), grad(v))*dx - (u_n + dt*(P-w_c_b*u))*v*dx + T_out_ht*v*ds
+#alpha*u*v*ds + v*u*dx + dt*k_tis*dot(grad(u), grad(v))*dx - (u_n + dt*(P-w_c_b*u))*v*dx + T_out_ht*v*ds
+#alpha*u*v*dx + dt*k_tis*dot(grad(u), grad(v))*dx - (u_n + dt*(P-w_c_b*u))*v*dx + T_out_ht*v*ds
 a=lhs(F)
 L=rhs(F)
 
 u=Function(V)
+
 # Now take steps in time and estimate the temperature for each time, until the full scaling is made.
 t=0
+
 for n in range(int(numSteps)):
     # Update time
     t += dt
@@ -182,19 +156,22 @@ for n in range(int(numSteps)):
     # Solve the system
     solve(a == L, u, solver_parameters={'linear_solver':'gmres'})   #might need to change from gmres to other solver?
     T =u.vector().array()
-
+    
     # Print the highest temperature
     print("Tmax for time step number " + str(t/dt))
     print(np.max(T))
 
+    u_n.assign(u)
+
     # If okay temperature then save data for each time step in format readable by MATLAB
+    """
     if (np.max(T)<Tmax and np.max(T)>Tmin):
         Coords = mesh.coordinates()
         Cells  = mesh.cells()
 
         # Index for this time step should be included in the name for the temperature file
         index=t/dt
-        f = h5py.File('../FEniCS_results/temperature_'+ index + '.h5','w')
+        f = h5py.File('../FEniCS_results/temperature_'+ str(index) + '.h5','w')
         f.create_dataset(name='Temp', data=T)
         f.create_dataset(name='P',    data=Coords)
         f.create_dataset(name='T',    data=Cells)
@@ -203,7 +180,7 @@ for n in range(int(numSteps)):
         f.close()
         print("saved T for step: ")
         print(index)
-
+"""
 
 print('Finished')
 

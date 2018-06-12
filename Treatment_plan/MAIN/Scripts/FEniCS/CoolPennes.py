@@ -131,38 +131,50 @@ maxAmp=float(maxAmp)
 V = FunctionSpace(mesh, "CG", 1)
 u = TrialFunction(V)
 v = TestFunction(V)
+#u=Function(V)
 
-u=Function(V)
-
+# Exemplets IC
+a=3
+b=1.2
+u_IC= Expression('1+x[0]*x[0]+a*x[1]*x[1]+b*t', degree=2, a=a, b=b, t=0)
+u_n=interpolate(u_IC, V)
 #Initial condition
-#u_IC= Expression('Temp',Temp = Temp,  t=0)
+#u_IC= Expression('P-w_c_b*Temp', P=P, Temp=Temp, w_c_b=w_c_b,  t=0)
+#zeros_IC=np.zeros(78206)
+#z=str(zeros_IC)
+#u_IC= Expression(z, t=0, degree=0)
 #u_n=interpolate(u_IC,V)
 
-# Alternaative to IC
-class InitialConditions(Expression):
-    def _init_(self):
-        self.degree=0
-    
-    def eval(self, values, x):
-        self.degree=0
-        for i in range(78105):
-            values[i]= Temp[i]
+# Alternative to IC
+#class InitialConditions(Expression):
+#    def _init_(self):
+#        self.degree=0
+#
+#    def eval(self, values, x):
+#        self.degree=0
+#        for i in range(78206):
+#           values[i]= Temp[i]
+#
+#    def value_shape(self):
+#        return (78206,)
+#
+#u_init=InitialConditions(degree=0)
+#u_n=interpolate(u_init,V)
 
-    def value_shape(self):
-        return (78105,)
-
-u_init=InitialConditions()
-u_n.interpolate(u_init)
-    
-
+# Alternative 2
+#u_IC=Temp
+#u_n=Temp
 # Define variational formulation to solve
-f=P-w_c_b*u
-F= alpha*u*v*dx + dt*k_tis*dot(grad(u), grad(v))*dx - (u_n + dt*f)*v*dx + T_out_ht*v*ds
-a,L = lhs(F), rhs(F)
+#f=P-w_c_b*u
 
+F=alpha*u*v*dx + dt*k_tis*dot(grad(u), grad(v))*dx - (u_n + dt*(P-w_c_b*u))*v*dx + T_out_ht*v*ds
+a=lhs(F)
+L=rhs(F)
+
+u=Function(V)
 # Now take steps in time and estimate the temperature for each time, until the full scaling is made.
 t=0
-for n in range(numSteps):
+for n in range(int(numSteps)):
     # Update time
     t += dt
     u_IC.t=t
@@ -172,7 +184,7 @@ for n in range(numSteps):
     T =u.vector().array()
 
     # Print the highest temperature
-    print("Tmax for time step number " + t/dt)
+    print("Tmax for time step number " + str(t/dt))
     print(np.max(T))
 
     # If okay temperature then save data for each time step in format readable by MATLAB
@@ -193,6 +205,7 @@ for n in range(numSteps):
         print(index)
 
 
+print('Finished')
 
 
 

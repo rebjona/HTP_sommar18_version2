@@ -74,7 +74,9 @@ mesh = Mesh('../Input_to_FEniCS/mesh.xml')
 
 print('Importing material properties...')
 T_b = Constant(0.0) # Blood temperature relative body temp
-P        = load_data("../Input_to_FEniCS/P.mat")
+P1       = load_data("../Input_to_FEniCS/P1.mat")
+P2       = load_data("../Input_to_FEniCS/P2.mat")
+P3       = load_data("../Input_to_FEniCS/P3.mat")
 k_tis    = load_data("../Input_to_FEniCS/thermal_cond.mat")
 w_c_b    = load_data("../Input_to_FEniCS/perfusion_heatcapacity.mat")
 alpha    = load_data("../Input_to_FEniCS/bnd_heat_transfer.mat", 0)
@@ -187,6 +189,7 @@ for n in range(int(numSteps)):
     print("Tmax for time step number " + str(t/dt))
     print(np.max(T))
 
+    u_n.assign(u)
     # If okay temperature then save data for each time step in format readable by MATLAB
     if (np.max(T)<Tmax and np.max(T)>Tmin):
         Coords = mesh.coordinates()

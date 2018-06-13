@@ -1,6 +1,6 @@
 """
 
- This is a code that combines Pennes.py with CoolPennes.py, i.e both scaling and time computations are performed.
+ This code combines Pennes.py with CoolPennes.py, i.e both scaling and time computations are performed.
  TODO: implement the code for combining plans and implement non-linear parameters for the perfusion
  (Also: Improve time stepping, not working correctly at the moment)
     
@@ -90,9 +90,7 @@ print("Done loading.")
 #-----------------------
 Tmax= 5 # 0 = 37C, 8 if head and neck, 5 if brain
 Tmin= 4.5 # 0 = 37C
-Time=60*10
-dt=120
-numSteps=Time/dt
+maxIter=180
 
 #Change type of data
 al=ampLimit[0][0]
@@ -180,9 +178,9 @@ while (((np.max(T)<Tmin or np.max(T)>Tmax) and nbrIter<=maxIter) or maxAmp>ampLi
                 scaleTot=scaleTot*(0.85)
                 maxAmp=sqrt(0.85)*maxAmp
 
-T =u.vector().array()
+        T =u.vector().array()
 
-nbrIter=nbrIter+1
+    nbrIter=nbrIter+1
     print("Tmax:")
     print(np.max(T))
     print("Scale:")
@@ -197,8 +195,8 @@ nbrIter=nbrIter+1
 if ((np.max(T)>Tmin and np.max(T)<Tmax and maxAmp<=ampLimit) or maxAmp==ampLimit):
     
     # Plot solution and mesh
-    plot(u)
-    plot(mesh)
+    #plot(u)
+    #plot(mesh)
     
     # Save data in a format readable by matlab
     Coords = mesh.coordinates()
@@ -225,13 +223,13 @@ if ((np.max(T)>Tmin and np.max(T)<Tmax and maxAmp<=ampLimit) or maxAmp==ampLimit
 
     fileAmp.close()
 
-# Save the scale factor in a file
-fileScale=open('../FEniCS_results/scale_factor.txt','w')
-fileScale.write(str(scaleTot))
-fileScale.close()
+    # Save the scale factor in a file
+    fileScale=open('../FEniCS_results/scale_factor.txt','w')
+    fileScale.write(str(scaleTot))
+    fileScale.close()
 
-#Print parameters
-print("Tmax:")
+    #Print parameters
+    print("Tmax:")
     print(np.max(T))
     print("Scale:")
     print(scaleTot)
@@ -251,7 +249,12 @@ print("Scaling finished")
 
 # Perform the time calculations as in CoolPennes------------------------------------------
 
-scale=Constant(scaleTotal)
+# TODO This code is not finished,  the resulting T is strange and no time is given as output
+Time=1
+dt=0.1
+numSteps=Time/dt
+ScaleTotal=scaleTot
+scale=Constant(ScaleTotal)
 
 # Define function space and test/trial functions needed for the variational formulation
 V = FunctionSpace(mesh, "CG", 1)
@@ -263,7 +266,7 @@ u_IC= Expression("0", t=0, degree=0) # degree=1?
 u_n=interpolate(u_IC,V)
 
 P=P*scale # Scale P according to previous calculations
-F=alpha*u*v*ds + v*u*dx + dt*k_tis*dot(grad(u), grad(v))*dx - (u_n + dt*(P-w_c_b*u))*v*dx + T_out_ht*v*ds
+F=dt*alpha*u*v*ds + v*u*dx + dt*k_tis*dot(grad(u), grad(v))*dx - (u_n + dt*(P-w_c_b*u))*v*dx - T_out_ht*v*ds
 #alpha*u*v*ds + v*u*dx + dt*k_tis*dot(grad(u), grad(v))*dx - (u_n + dt*(P-w_c_b*u))*v*dx + T_out_ht*v*ds
 #alpha*u*v*dx + dt*k_tis*dot(grad(u), grad(v))*dx - (u_n + dt*(P-w_c_b*u))*v*dx + T_out_ht*v*ds
 a=lhs(F)
@@ -283,7 +286,7 @@ for n in range(int(numSteps)):
     T =u.vector().array()
     
     # Print the highest temperature
-    print("Tmax for time step number " + str(t/dt) + ":")
+    print("Tmax for time step number " + str(int(t/dt)) + ":")
     print(np.max(T))
     
     u_n.assign(u)

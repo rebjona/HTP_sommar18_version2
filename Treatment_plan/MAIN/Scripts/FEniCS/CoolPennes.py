@@ -98,8 +98,8 @@ with h5py.File("../FEniCS_results/temperature.h5",'r') as hdf:
 #-----------------------
 Tmax= 5 # 0 = 37C, 8 if head and neck, 5 if brain
 Tmin= 4.5 # 0 = 37C
-Time=60*10
-dt=120
+Time=1
+dt=0.1
 numSteps=Time/dt
 #-----------------------
 
@@ -141,7 +141,7 @@ u_IC= Expression("0", t=0, degree=0) # degree=1?
 u_n=interpolate(u_IC,V)
 
 P=P*scale # Scale P according to previous calculations
-F=alpha*u*v*ds + v*u*dx + dt*k_tis*dot(grad(u), grad(v))*dx - (u_n + dt*(P-w_c_b*u))*v*dx + T_out_ht*v*ds
+F=dt*alpha*u*v*ds + v*u*dx + dt*k_tis*dot(grad(u), grad(v))*dx - (u_n + dt*(P-w_c_b*u))*v*dx - T_out_ht*v*ds
 #alpha*u*v*ds + v*u*dx + dt*k_tis*dot(grad(u), grad(v))*dx - (u_n + dt*(P-w_c_b*u))*v*dx + T_out_ht*v*ds
 #alpha*u*v*dx + dt*k_tis*dot(grad(u), grad(v))*dx - (u_n + dt*(P-w_c_b*u))*v*dx + T_out_ht*v*ds
 a=lhs(F)
@@ -161,7 +161,7 @@ for n in range(int(numSteps)):
     T =u.vector().array()
     
     # Print the highest temperature
-    print("Tmax for time step number " + str(t/dt) + ":")
+    print("Tmax for time step number " + str(int(t/dt)) + ":")
     print(np.max(T))
 
     u_n.assign(u)

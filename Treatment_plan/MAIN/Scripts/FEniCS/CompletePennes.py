@@ -111,6 +111,7 @@ scaleTot=1;
 nbrIter=0;
 T=0
 done=False
+numberOfP=1 # insert number of P used (Only one P works right now)
 
 while (((np.max(T)<Tmin or np.max(T)>Tmax) and nbrIter<=maxIter) or maxAmp>ampLimit):
     
@@ -191,7 +192,7 @@ while (((np.max(T)<Tmin or np.max(T)>Tmax) and nbrIter<=maxIter) or maxAmp>ampLi
     if(done):
         break
 
-# Plot and save
+# Save temperature matrix, amplitudes and scale factor
 if ((np.max(T)>Tmin and np.max(T)<Tmax and maxAmp<=ampLimit) or maxAmp==ampLimit):
     
     # Plot solution and mesh
@@ -220,9 +221,7 @@ if ((np.max(T)>Tmin and np.max(T)<Tmax and maxAmp<=ampLimit) or maxAmp==ampLimit
         a=(round(a*100))*sqrt(scaleTot)/100
         amplitudeVec.append(a)
         fileAmp.write(str(a) + " ")
-
     fileAmp.close()
-
     # Save the scale factor in a file
     fileScale=open('../FEniCS_results/scale_factor.txt','w')
     fileScale.write(str(scaleTot))

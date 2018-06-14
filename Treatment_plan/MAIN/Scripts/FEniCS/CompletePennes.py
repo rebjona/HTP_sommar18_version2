@@ -2,7 +2,7 @@
 
  This code combines Pennes.py with CoolPennes.py, i.e both scaling and time computations are performed.
  It is possible to combine plans, i.e to have a temperature matrix from an earlier P as initial condition to the next P. In order to combine different P they must be named P1, P2,.. etc and put in the folder  Input_to_FEniCS. If only one P is used, then just call it P, no index is needed.
- TODO: implement non-linear parameters for the perfusion
+ TODO: implement non-linear parameters for the perfusion.
     
 """
 

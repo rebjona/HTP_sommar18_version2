@@ -74,6 +74,7 @@ mesh = Mesh('../Input_to_FEniCS/mesh.xml')
 print('Importing material properties...')
 # Load P matrices, either just one or several depending on how many HT plans one wants to combine. TODO make it possible to combine plans
 P        = load_data("../Input_to_FEniCS/P.mat")
+
 #P2        = load_data("../Input_to_FEniCS/P2.mat")
 #P3        = load_data("../Input_to_FEniCS/P3.mat")
 
@@ -183,7 +184,7 @@ for n in range(int(numSteps)):
         f.close()
         print("saved T for step: ")
         print(index)
-"""
+    """
 
 print('Finished')
 

@@ -311,13 +311,13 @@ for i in range(numberOfP): # Outer loop for each HT plan one wants to include
         u_n.assign(u)
         
         # If okay temperature then save data for each time step in format readable by MATLAB
-        if (np.max(T)<Tmax and np.max(T)>Tmin or t==0.1):
+        if (np.max(T)<Tmax and np.max(T)>Tmin):
             Coords = mesh.coordinates()
             Cells  = mesh.cells()
             
             # Index for this time step should be included in the name for the temperature file
             index=t/dt
-            f = h5py.File('../FEniCS_results/temperature_'+ str(index) + '.h5','w')
+            f = h5py.File('../FEniCS_results/temperature_'+ str(i+1)+ str(index) + '.h5','w')
             f.create_dataset(name='Temp', data=T)
             f.create_dataset(name='P',    data=Coords)
             f.create_dataset(name='T',    data=Cells)
@@ -326,8 +326,6 @@ for i in range(numberOfP): # Outer loop for each HT plan one wants to include
             f.close()
             print("saved T for step: ")
             print(index)
-
-
 
     print("Time iteration finished for plan " + str(i+1))
 

@@ -8,7 +8,6 @@ import numpy as np
 #  Output(saved): scaled amplitude settings and temperature.h5 file for further calculations and plots in MATLAB. Temperaturefiles as .pvd and .vtu can be generated as well (for ParaView).
 
 
-
 # Load in .mat parameter
 # The optional input argument 'degree' is FEniCS internal interpolation type.
 # The loaded data will additionally be fit with trilinear interpolation.

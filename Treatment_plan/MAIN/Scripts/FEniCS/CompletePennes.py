@@ -65,7 +65,8 @@ P        = load_data("../Input_to_FEniCS/P.mat")
 
 T_b = Constant(0.0) # Blood temperature relative body temp
 k_tis    = load_data("../Input_to_FEniCS/thermal_cond.mat")
-density= load_data("../Input_to_FEniCS/thermal_capacity.mat")
+density= load_data("../Input_to_FEniCS/density.mat")
+
 
 # Load the w_c_b, depending on whether one wants to use linear perfusion data or non-linear perfusion data. TODO create the non-linear perfusion data and implement it in the Matlab code
 w_c_b    = load_data("../Input_to_FEniCS/perfusion_heatcapacity.mat") # This is the "standard" perfusion matrix with linear values

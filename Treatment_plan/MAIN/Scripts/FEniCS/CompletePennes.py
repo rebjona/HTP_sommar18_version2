@@ -73,6 +73,8 @@ alpha    = load_data("../Input_to_FEniCS/bnd_heat_transfer.mat", 0)
 T_out_ht = load_data("../Input_to_FEniCS/bnd_temp_times_ht.mat", 0)
 
 
+
+
 # Read current amplitudes and the amplitude limit, generated in MATLAB
 with open("../Input_to_FEniCS/amplitudes.txt") as file:
     amplitudes = []
@@ -265,7 +267,6 @@ for i in range(numberOfP): # Outer loop for each HT plan one wants to include
 
     # Perform the time calculations as in CoolPennes------------------------------------------
 
-    # TODO This code is not finished,  the resulting T is strange and no time is given as output
     Time=1
     dt=0.1
     numSteps=Time/dt
@@ -285,7 +286,7 @@ for i in range(numberOfP): # Outer loop for each HT plan one wants to include
 
     P=P*scale # Scale P according to previous calculations
     F=dt*alpha*u*v*ds + v*u*dx + dt*k_tis*dot(grad(u), grad(v))*dx - (u_n + dt*(P-w_c_b*u))*v*dx - T_out_ht*v*ds
-    #alpha*u*v*ds + v*u*dx + dt*k_tis*dot(grad(u), grad(v))*dx - (u_n + dt*(P-w_c_b*u))*v*dx + T_out_ht*v*ds
+    #dt*alpha*u*v*ds + v*u*dx + dt*k_tis*dot(grad(u), grad(v))*dx - (u_n + dt*(P-w_c_b*u))*v*dx - T_out_ht*v*ds
     #alpha*u*v*dx + dt*k_tis*dot(grad(u), grad(v))*dx - (u_n + dt*(P-w_c_b*u))*v*dx + T_out_ht*v*ds
     a=lhs(F)
     L=rhs(F)
@@ -294,11 +295,10 @@ for i in range(numberOfP): # Outer loop for each HT plan one wants to include
 
     # Now take steps in time and estimate the temperature for each time step, until the full scaling is made.
     t=0
-
     for n in range(int(numSteps)):
         # Update time
         t += dt
-        u_IC.t=t
+        #u_IC.t=t
         
         # Solve the system
         solve(a == L, u, solver_parameters={'linear_solver':'gmres'})   #might need to change from gmres to other solver?
@@ -307,6 +307,7 @@ for i in range(numberOfP): # Outer loop for each HT plan one wants to include
         # Print the highest temperature
         print("Tmax for time step number " + str(int(t/dt)) + ":")
         print(np.max(T))
+        print(np.min(T))
         
         u_n.assign(u)
         

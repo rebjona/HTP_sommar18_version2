@@ -162,7 +162,7 @@ Pha=zeros(length(wave_opt),1);
 
 for i=1:length(wave_opt)
     Amp(i) = abs(wave_opt(i));
-    Pha(i) = rad2deg(phase(wave_opt(i)));
+    Pha(i) = rad2deg(angle(wave_opt(i)));
 end
 
 % Write settings

@@ -85,7 +85,7 @@ P        = load_data("../Input_to_FEniCS/P.mat")
 #P3        = load_data("../Input_to_FEniCS/P3.mat")
 
 T_b = Constant(0.0) # Blood temperature relative body temp
->>>>>>> 15bf91de232cc0f87ad48ade2f5ea5fb9b7b4160
+
 k_tis    = load_data("../Input_to_FEniCS/thermal_cond.mat")
 
 # Load the w_c_b, depending on whether one wants to use linear perfusion data or non-linear perfusion data. TODO create the non-linear perfusion data and implement it in the Matlab code
@@ -173,10 +173,8 @@ for n in range(int(numSteps)):
     print(np.max(T))
 
     u_n.assign(u)
-<<<<<<< HEAD
-=======
 
->>>>>>> 15bf91de232cc0f87ad48ade2f5ea5fb9b7b4160
+
     # If okay temperature then save data for each time step in format readable by MATLAB
     """
     if (np.max(T)<Tmax and np.max(T)>Tmin):

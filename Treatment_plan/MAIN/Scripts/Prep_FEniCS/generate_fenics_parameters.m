@@ -117,7 +117,7 @@ if do_stage_1 % The file to load depends if stage_1 is turned on
 else % If stage 1 is turned off then use premade compilation
     thermal_comp_keyword = 'premade_thermal_compilation';
 end
-[thermal_conductivity, rest_perf_cap, modified_perf_cap, bnd_heat_trans, bnd_temp] =...
+[thermal_conductivity, rest_perf_cap, modified_perf_cap, bnd_heat_trans, bnd_temp, density, heat_capacity] =...
     get_parameter_vectors(thermal_comp_keyword, modelType);
 if endsWith(modelType, 'salt')
     thermal_conductivity(82) = 0.596; % Salt water conductivity OBS fel salthalt
@@ -126,7 +126,7 @@ end
 % Finalize boundary condition
 create_bnd_matrices(overwriteOutput, tissue_mat, water_ind, bnd_heat_trans, bnd_temp, modelType);
 
-create_vol_matrices(overwriteOutput, tissue_mat, thermal_conductivity, modified_perf_cap, modelType);
+create_vol_matrices(overwriteOutput, tissue_mat, thermal_conductivity, modified_perf_cap, density, heat_capacity, modelType);
 disp('Matrices done.')
 %% 5. Final
 disp('5. Final stage: Extrapolating data.')
@@ -134,21 +134,33 @@ disp('5. Final stage: Extrapolating data.')
 % See help finalize for explanation
 exist_thermal   = exist(get_path('xtrpol_thermal_cond_mat', modelType), 'file');
 exist_perfusion = exist(get_path('xtrpol_perfusion_heatcapacity_mat', modelType), 'file');
+exist_heat_capacity = exist(get_path('xtrpol_heat_capacity_mat', modeltype), 'file');
+exist_density = exist(get_path('xtrpol_density_mat', modeltype), 'file');
+
 if length(freq)>1
     path = get_path('xtrpol_PLD_multiple', modelType, freq);
     exist_PLD       = exist(path{1}, 'file');
 elseif length(freq)==1
     exist_PLD       = exist(get_path('xtrpol_PLD_single', modelType, freq), 'file');
 end
-if ~all([exist_thermal, exist_perfusion, exist_PLD]) || overwriteOutput
+
+interior_mat = tissue_mat ~= water_ind & tissue_mat ~= ext_air_ind;
+[~,nearest_points] = Extrapolation.meijster(interior_mat);
+
+if ~all([exist_thermal, exist_perfusion, exist_PLD, exist_density , exist_heat_capacity ]) || overwriteOutput
     % Get the nearest element inside the body and distances to the element for
     % all elements
-    interior_mat = tissue_mat ~= water_ind & tissue_mat ~= ext_air_ind;
-    [~,nearest_points] = Extrapolation.meijster(interior_mat);
-    
     if ~exist_thermal
         finalize('thermal_cond_mat', nearest_points, modelType);
     end
+    if ~exist_density
+        finalize(heat_capacity, nearest_points, modeltype);
+    end
+    
+    if ~exist_heat_capacity
+        finalize(heat_capacity, nearest_points, modeltype);
+    end
+        
     if ~exist_perfusion
         finalize('perfusion_heatcapacity_mat', nearest_points, modelType);
     end

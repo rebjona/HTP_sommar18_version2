@@ -65,6 +65,8 @@ P2        = load_data("../Input_to_FEniCS/P1.mat") # add additional plans if wan
 
 T_b = Constant(0.0) # Blood temperature relative body temp
 k_tis    = load_data("../Input_to_FEniCS/thermal_cond.mat")
+rho= load_data("../Input_to_FEniCS/density.mat")
+c= load_data("../Input_to_FEniCS/heat_capacity.mat")
 
 # Load the w_c_b, depending on whether one wants to use linear perfusion data or non-linear perfusion data. TODO create the non-linear perfusion data and implement it in the Matlab code
 w_c_b    = load_data("../Input_to_FEniCS/perfusion_heatcapacity.mat") # This is the "standard" perfusion matrix with linear values
@@ -265,7 +267,6 @@ for i in range(numberOfP): # Outer loop for each HT plan one wants to include
 
     # Perform the time calculations as in CoolPennes------------------------------------------
 
-    # TODO This code is not finished,  the resulting T is strange and no time is given as output
     Time=1
     dt=0.1
     numSteps=Time/dt
@@ -284,8 +285,8 @@ for i in range(numberOfP): # Outer loop for each HT plan one wants to include
         u_n=interpolate(u_IC,V)
 
     P=P*scale # Scale P according to previous calculations
-    F=dt*alpha*u*v*ds + v*u*dx + dt*k_tis*dot(grad(u), grad(v))*dx - (u_n + dt*(P-w_c_b*u))*v*dx - T_out_ht*v*ds
-    #alpha*u*v*ds + v*u*dx + dt*k_tis*dot(grad(u), grad(v))*dx - (u_n + dt*(P-w_c_b*u))*v*dx + T_out_ht*v*ds
+    F=dt*alpha*u*v*ds + c*rho*v*u*dx + dt*k_tis*dot(grad(u), grad(v))*dx - (c*rho*u_n + dt*(P-w_c_b*u))*v*dx - T_out_ht*v*ds
+    #dt*alpha*u*v*ds + v*u*dx + dt*k_tis*dot(grad(u), grad(v))*dx - (u_n + dt*(P-w_c_b*u))*v*dx - T_out_ht*v*ds
     #alpha*u*v*dx + dt*k_tis*dot(grad(u), grad(v))*dx - (u_n + dt*(P-w_c_b*u))*v*dx + T_out_ht*v*ds
     a=lhs(F)
     L=rhs(F)
@@ -294,11 +295,10 @@ for i in range(numberOfP): # Outer loop for each HT plan one wants to include
 
     # Now take steps in time and estimate the temperature for each time step, until the full scaling is made.
     t=0
-
     for n in range(int(numSteps)):
         # Update time
         t += dt
-        u_IC.t=t
+        #u_IC.t=t
         
         # Solve the system
         solve(a == L, u, solver_parameters={'linear_solver':'gmres'})   #might need to change from gmres to other solver?
@@ -307,6 +307,7 @@ for i in range(numberOfP): # Outer loop for each HT plan one wants to include
         # Print the highest temperature
         print("Tmax for time step number " + str(int(t/dt)) + ":")
         print(np.max(T))
+        print(np.min(T))
         
         u_n.assign(u)
         

@@ -133,8 +133,8 @@ disp('5. Final stage: Extrapolating data.')
 % See help finalize for explanation
 exist_thermal   = exist(get_path('xtrpol_thermal_cond_mat', modelType), 'file');
 exist_perfusion = exist(get_path('xtrpol_perfusion_heatcapacity_mat', modelType), 'file');
-exist_heat_capacity = exist(get_path('xtrpol_heat_capacity_mat', modeltype), 'file');
-exist_density = exist(get_path('xtrpol_density_mat', modeltype), 'file');
+exist_heat_capacity = exist(get_path('xtrpol_heat_capacity_mat', modelType), 'file');
+exist_density = exist(get_path('xtrpol_density_mat', modelType), 'file');
 
 if length(freq)>1
     path = get_path('xtrpol_PLD_multiple', modelType, freq);
@@ -146,18 +146,18 @@ end
 interior_mat = tissue_mat ~= water_ind & tissue_mat ~= ext_air_ind;
 [~,nearest_points] = Extrapolation.meijster(interior_mat);
 
-if ~all([exist_thermal, exist_perfusion, exist_PLD, exist_density , exist_heat_capacity ]) || overwriteOutput
+if ~all([exist_thermal, exist_perfusion, exist_PLD]) || overwriteOutput
     % Get the nearest element inside the body and distances to the element for
     % all elements
     if ~exist_thermal
         finalize('thermal_cond_mat', nearest_points, modelType);
     end
     if ~exist_density
-        finalize(heat_capacity, nearest_points, modeltype);
+        finalize('density_mat', nearest_points, modelType);
     end
     
     if ~exist_heat_capacity
-        finalize(heat_capacity, nearest_points, modeltype);
+        finalize('heat_capacity_mat', nearest_points, modelType);
     end
         
     if ~exist_perfusion

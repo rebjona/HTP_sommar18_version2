@@ -145,6 +145,8 @@ end
 
 interior_mat = tissue_mat ~= water_ind & tissue_mat ~= ext_air_ind;
 [~,nearest_points] = Extrapolation.meijster(interior_mat);
+finalize(density, nearest_points, modeltype);
+
 
 if ~all([exist_thermal, exist_perfusion, exist_PLD, exist_density , exist_heat_capacity ]) || overwriteOutput
     % Get the nearest element inside the body and distances to the element for
@@ -160,6 +162,7 @@ if ~all([exist_thermal, exist_perfusion, exist_PLD, exist_density , exist_heat_c
         finalize(heat_capacity, nearest_points, modeltype);
     end
         
+
     if ~exist_perfusion
         finalize('perfusion_heatcapacity_mat', nearest_points, modelType);
     end

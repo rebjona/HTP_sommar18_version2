@@ -19,7 +19,7 @@ addpath(optpath)
 if startsWith(lower(modelType), 'duke')==1
     parampath = [datapath 'df_duke_neck_cst_' num2str(freq) 'MHz.txt'];
 elseif startsWith(lower(modelType), 'child')==1
-    parampath = [datapath 'df_chHead_cst_' num2str(freq) 'MHz.txt'];
+    parampath = [datapath 'df_child_cst_' num2str(freq) 'MHz.txt'];
 else
     error('Model type not available. Enter the full name of your model tissue_file in create_sigma_mat.')
 end

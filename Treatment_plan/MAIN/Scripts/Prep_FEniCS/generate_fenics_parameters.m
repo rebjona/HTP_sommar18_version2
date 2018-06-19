@@ -27,7 +27,8 @@ filename = which('generate_fenics_parameters');
 [preppath,~,~] = fileparts(filename);
 scriptpath = [preppath filesep '..'];
 resultpath = [preppath filesep '..' filesep '..' filesep 'Results' filesep ...
-    'Input_to_FEniCS' filesep modelType];
+   'Input_to_FEniCS' filesep modelType];
+
 if ~exist(resultpath,'dir')
     disp(['Creating result folder at ' resultpath]);
     [success,message,~] = mkdir(resultpath);

@@ -32,9 +32,9 @@ Efield_objects = select_best(Efield_objects, nbrEfields, weight_denom, healthy_t
 % of M1
 A = zeros(length(Efield_objects));
 B = A;
-
+%ÄNDRAT - IF LOOP IMPLEMENTERAD
 % Calculate all integral values
-for i = 1:length(Efield_objects) % pick first Efield
+    for i = 1:length(Efield_objects) % pick first Efield
     for j = 1:length(Efield_objects) % pick second Efield
         if i > j % Symmetry case
             A(i,j) = conj(A(j,i));
@@ -48,8 +48,25 @@ for i = 1:length(Efield_objects) % pick first Efield
         A(i,j) = scalar_prod_integral(P,weight_denom)/1e9;
         B(i,j) = scalar_prod_integral(P,weight_nom)/1e9;
     end
-end
+    end
 
+for i = 1:length(Efield_objects) % pick first Efield
+    for j = 1:length(Efield_objects) % pick second Efield
+        if i > j % Symmetry case
+            A(i,j) = conj(A(j,i));
+            B(i,j) = conj(B(j,i));
+            continue
+        end
+        e_i = Efield_objects{i};
+        e_j = Efield_objects{j};
+        P = scalar_prod(e_i,e_j);
+        
+        A(i,j) = scalar_prod_integral(P,weight_denom)/1e9;
+        %ÄNDRAT - B SATT I KVADRAT
+        B(i,j) = scalar_prod_integral(P,weight_nom)/1e9;
+    end
+end
+%FÄRDIGÄNDRAT - IF-LOOP IMPLEMENTERAD
 P_nom = CPoly(0);
 P_den = CPoly(0);
 n = length(Efield_objects);

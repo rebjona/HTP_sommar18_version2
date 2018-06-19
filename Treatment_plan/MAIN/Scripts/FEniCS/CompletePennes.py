@@ -59,8 +59,8 @@ mesh = Mesh('../Input_to_FEniCS/mesh.xml')
 
 print('Importing material properties...')
 # Load P matrices, either just one or several depending on how many HT plans one wants to combine.
-P        = load_data("../Input_to_FEniCS/P.mat")
-#P2        = load_data("../Input_to_FEniCS/P2.mat") # add additional plans if wanted
+P1        = load_data("../Input_to_FEniCS/P0.mat")
+P2        = load_data("../Input_to_FEniCS/P1.mat") # add additional plans if wanted
 #P3        = load_data("../Input_to_FEniCS/P3.mat")
 
 T_b = Constant(0.0) # Blood temperature relative body temp
@@ -105,7 +105,7 @@ V = FunctionSpace(mesh, "CG", 1)
 u = TrialFunction(V)
 v = TestFunction(V)
 
-numberOfP=1 # insert number of P used, i.e how many plans that should be combined
+numberOfP=2 # insert number of P used, i.e how many plans that should be combined
 
 for i in range(numberOfP): # Outer loop for each HT plan one wants to include
 

@@ -7,7 +7,6 @@ function [temp_mat, tx] = evaluate_temp(modelType, freq, overwriteOutput)
 if nargin < 3
     overwriteOutput = false;
 end
-
 % Get all paths
 filename = which('evaluate_temp');
 [temperaturepath,~,~] = fileparts(filename);

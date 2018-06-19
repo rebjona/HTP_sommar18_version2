@@ -74,12 +74,17 @@ elseif startsWith(lower(modelType),'child')==1
     int_air_ind = 5;
     tumor_ind = 9;
 end
-healthy_tissue_mat = tissue_mat~=water_ind & ...
+load 'iteration'
+if iteration == 1
+    healthy_tissue_mat = tissue_mat~=water_ind & ...
     tissue_mat~=ext_air_ind & ...
     tissue_mat~=tumor_ind & ...
-    tissue_mat~=int_air_ind & ...
-    tissue_mat~=salt_ind;
-
+    tissue_mat~=int_air_ind;
+    %tissue_mat~=salt_ind;
+else
+    load 'ChangeTemp'
+healthy_tissue_mat=ChangeTemp;
+end
 tumor_oct = Yggdrasil.Octree(single(tissue_mat==tumor_ind));
 healthy_tissue_oct = Yggdrasil.Octree(single(healthy_tissue_mat));
 tumor_mat = tissue_mat==tumor_ind;
@@ -162,7 +167,7 @@ Pha=zeros(length(wave_opt),1);
 
 for i=1:length(wave_opt)
     Amp(i) = abs(wave_opt(i));
-    Pha(i) = rad2deg(phase(wave_opt(i)));
+    Pha(i) = rad2deg(angle(wave_opt(i)));
 end
 
 % Write settings

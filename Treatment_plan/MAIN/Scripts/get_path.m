@@ -12,6 +12,8 @@ sourcepath = [scriptpath filesep '..' filesep 'Results' filesep 'P_and_unscaled_
 % temporary files
 stage1path = [scriptpath filesep 'Prep_FEniCS' filesep 'tmp' filesep 'Stage1' filesep];
 stage2path = [scriptpath filesep 'Prep_FEniCS' filesep 'tmp' filesep 'Stage2' filesep];
+%Path to Input_to_FEniCS, under Scripts
+inputpath = [scriptpath filesep '..' filesep 'Input_to_FEniCS' filesep];
 
 if nargin < 2
     switch(lower(str))
@@ -42,6 +44,8 @@ if nargin < 2
             path = [stage2path 'density.mat'];
         case 'heat_capacity_mat'
             path = [stage2path 'heat_capacity.mat'];
+        case 'initial_perf_mat'
+            path = [inputpath 'initial_perf.mat'];
     end
 elseif nargin==2
     % output

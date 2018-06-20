@@ -32,7 +32,7 @@ tissue_mat = Extrapolation.load([datapath filesep 'tissue_mat_' modelType '.mat'
 
 % Define vector with 0 when there is no hotspot and 1 when there is a
 % hot spot present
-hotspot= zeros(nbr_temp_files,1)
+hotspot= zeros(1,nbr_temp_files)
 
 % Define tumor index for model
 if startsWith(modelType, 'duke')
@@ -50,14 +50,15 @@ for i =1: nbr_temp_files
     temp_mat(:,:,:,i) = read_temperature(temppath,1,1,1,a,b,c);
     
     % Exclude tumor from matrix
-    temp_vec=temp_mat(:);
-    healthy_index=find(temp_vec~=tumor_ind); 
+    temp_vec=temp_mat(:,:,:,i);
+    temp_vec=temp_vec(:);
+    healthy_index=find(tissue_mat~=tumor_ind); 
     healthy_vec(:,i)=temp_vec(healthy_index);
 end
 
 % Define hot spot where the temperature is higher than Tmax_healthy
 for i=1:nbr_temp_files
-    if max(healthy_vec(i))>= Tmax_healthy
+    if max(healthy_vec(:,i))>= Tmax_healthy
         hotspot(i)=1;
     end
 end
@@ -65,7 +66,7 @@ end
 % Find in which time step the first hot spot occures
 first_hotspot=min(find(hotspot==1));
 
-% Estimate when the hot spot occured given the recommended_time
-time_setting=(first_hotspot/recommended_time)*recommended_time;
+% Estimate the time before hotspot occured given the recommended_time
+time_setting=(recommended_time/nbr_temp_files)*(first_hotspot-1);
 end
 

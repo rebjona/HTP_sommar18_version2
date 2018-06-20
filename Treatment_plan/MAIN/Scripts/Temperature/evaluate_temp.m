@@ -1,10 +1,10 @@
-function [temp_mat, tx] = evaluate_temp(modelType, freq, overwriteOutput)
+function [temp_mat, tx] = evaluate_temp(modelType, freq, hstreshold, iteration, overwriteOutput)
 %function [temp_mat] = EVALUATE_TEMP(overwriteOutput)
 %   Reads the output from example 3(FEniCS temp. simulations)
 %   and transforms it into a .mat file. It also ends with some evaluation
 %   of the temperature, such as T90, T70, T50.
 
-if nargin < 3
+if nargin < 5
     overwriteOutput = false;
 end
 % Get all paths
@@ -16,7 +16,6 @@ resultpath = [temperaturepath filesep '..' filesep '..' filesep 'Results' filese
 temppath = [temperaturepath filesep '..' filesep '..' filesep 'Results' filesep 'FEniCS_results' filesep modelType ...
     filesep 'temperature.h5'];
 addpath(scriptpath)
-
 % Ensure Extrapolation package is available
 % It is needed to load .mat-files
 if strcmp(which('Extrapolation.load'), '')
@@ -48,5 +47,5 @@ else % If the .mat file already exists
 end
 
 % Evaluate tumor temp
-[tx] = tumor_temp(temp_mat, modelType, freq);
+[tx] = tumor_temp(temp_mat, modelType, freq, hstreshold, iteration);
 end

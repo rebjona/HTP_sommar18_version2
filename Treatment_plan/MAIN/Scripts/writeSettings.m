@@ -1,4 +1,4 @@
-function writeSettings(resultpath, settings, modelType, freq, settings_time)
+function writeSettings(resultpath, settings, modelType, freq,iteration,hstreshold, SavePath, settings_time)
 %writeSettings: writes txt-file out of settings that can be used in LabView
 %   INPUT:
 %   resultpath - path to where results are to be stored, not ending with
@@ -14,7 +14,7 @@ function writeSettings(resultpath, settings, modelType, freq, settings_time)
 %           time_settings
 %   goal_power_tumor - goal power of tumor used in optimization, set to 0
 %                      if time reversal is used instead on opt.
-if nargin == 4
+if nargin == 7
     settings_time = 1;
 end
 if length(freq)==1
@@ -40,4 +40,5 @@ else
 end
 
 fclose(fileID);
+
 end

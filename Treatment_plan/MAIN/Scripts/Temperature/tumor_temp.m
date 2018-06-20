@@ -1,4 +1,4 @@
-function [tx] = tumor_temp(temp_mat, modelType, freq)
+function [tx] = tumor_temp(temp_mat, modelType, freq, hstreshold, iteration)
 %function [tx] = tumor_temp(temp_mat)
 %   Makes an evaluation of the temperature in the tumor
 %   using the T90, T70, T50, T0 indicators.
@@ -32,9 +32,17 @@ tissue_mat = Extrapolation.load([datapath filesep 'tissue_mat_' modelType '.mat'
 tx = TX([0 10 50 90]', temp_mat, tissue_mat, tumor_ind);
 disp('Tumor temperatures are:')
 fprintf('Tmax %f,\nT10 %f,\nT50 %f,\nT90 %f\n',tx(1),tx(2),tx(3),tx(4));
+TempTumor=[tx(1), tx(2), tx(3), tx(4)]';
 tx_h = TXhealthy([0 10 50 90]', temp_mat, tissue_mat, modelType, freq);
 disp('Temperatures in healthy tissue are:')
 fprintf('Tmax %f,\nT10 %f\nT50 %f,\nT90 %f\n', tx_h(1),tx_h(2),tx_h(3),tx_h(4));
+TempHealthy=[tx_h(1), tx_h(2), tx_h(3), tx_h(4)];
+fileID=fopen('Temperatures.txt','w');
+fprintf(fileID,'%6s %12s\r\n','Tumor','Healthy');
+fprintf(fileID,'%6s %12s\r\n',TempTumor,TempHealthy);
+fclose(fileID);
+
+
 sizeOfT = size(temp_mat);
 Tmean = sum(temp_mat(:))/(sizeOfT(1)*sizeOfT(2)*sizeOfT(3));
 disp(['Tmean for whole model is: ' num2str(Tmean)])

@@ -1,5 +1,5 @@
 function [] = EF_optimization_single(freq, nbrEfields, modelType, ...
-    goal_function, particle_settings)
+    goal_function, particle_settings, hstreshold, iteration, SavePath)
 %[P] = EF_OPTIMIZATION()
 %   Calculates a optimization of E-fields for one frequency to maximize 
 %   power in tumor while minimizing hotspots. The resulting power loss 
@@ -30,6 +30,7 @@ end
 filename = which('EF_optimization_single');
 [rootpath,~,~] = fileparts(filename);
 datapath = [rootpath filesep '..' filesep '..' filesep 'Data'];
+mainpath = [rootpath filesep '..' filesep '..' filesep '..' filesep 'MAIN'];
 scriptpath = [rootpath filesep '..'];
 addpath(scriptpath)
 resultpath = [rootpath filesep '..' filesep '..' filesep 'Results' filesep 'P_and_unscaled_settings'];
@@ -169,17 +170,19 @@ for i=1:length(wave_opt)
     Amp(i) = abs(wave_opt(i));
     Pha(i) = rad2deg(angle(wave_opt(i)));
 end
-
 % Write settings
 settings_m1 = [Amp Pha ant_opt'];
 settings_m1 = sortrows(settings_m1,3);
 settings_m1(:,3) = [];
-writeSettings(resultpath, settings_m1, modelType, freq);
-
+writeSettings(resultpath, settings_m1, modelType, freq,iteration,hstreshold, SavePath);
 % Save PLD and Efields
 oct = e_tot_opt;
 save([resultpath filesep 'P_' modelType '_' num2str(freq) 'MHz.mat'], 'mat_1', '-v7.3');
 save([resultpath filesep 'E_' modelType '_' num2str(freq) 'MHz.oct'], 'oct', '-v7.3');
+cd(mainpath)
+cd('Results');
+copyfile ('P_and_unscaled_settings', SavePath, 'f');
+cd(mainpath)
 %----------------------------------------------------------------------
 close all
 % Empty load_maestro

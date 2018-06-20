@@ -14,7 +14,7 @@ power_in_h_t = Yggdrasil.Math.integral(P, weight_nom)/1e9;
 power_in_tumor = Yggdrasil.Math.scalar_prod_integral(P, weight_denom)/1e9;
 load 'iteration'
 if iteration ==1
-    q = power_in_h_t/(power_in_tumor)^3;
+    q = power_in_h_t/(power_in_tumor);
 else
     q = power_in_h_t/(power_in_tumor)^2;
 

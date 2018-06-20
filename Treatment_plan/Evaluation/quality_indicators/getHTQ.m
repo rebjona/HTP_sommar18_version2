@@ -23,7 +23,7 @@ datapath = [scriptpath filesep '..' filesep '..' filesep 'MAIN' filesep 'Data' f
 if startsWith(lower(modelType), 'duke') == 1
     tissue_filepath = ([datapath 'df_duke_neck_cst_450MHz.txt']);
 elseif startsWith(lower(modelType),'child')==1
-    tissue_filepath = ([datapath 'df_chHead_cst_450MHz.txt']);
+    tissue_filepath = ([datapath 'df_child_cst_450MHz.txt']);%ändrat från df_chHead_cst
 elseif startsWith(lower(modelType),'cylinder')==1
     tissue_filepath = ([datapath 'df_cylinder_cst_450MHz.txt']);    
 else

@@ -66,8 +66,9 @@ index_fat_hot=find(temp_higher_45==fat & temp_higher_45==1);
 perfusion_mat(index_fat_hot)=0.72;
 
 %-----------------------------------------------------
-
-%save(get_path('perf_mat_nonlin'), 'perfusion_mat', '-v7.3') % adda det caset till get_path
+current_folder=pwd;
+savepath=  [pwd filesep '..' filesep 'Input_to_FEniCS' filesep 'perfusion_mat_nonlin'];
+save(savepath, 'perfusion_mat', '-v7.3');
 % borde man spara in m olika index så man kan kolla på dom senare?
 
 end

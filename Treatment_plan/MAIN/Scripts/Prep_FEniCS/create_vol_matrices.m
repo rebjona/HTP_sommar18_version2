@@ -23,8 +23,8 @@ function create_vol_matrices(overwriteOutput, tissue_mat, thermal_conductivity, 
     end
     
     if ~exist(get_path('heat_capacity_mat'),'var') || overwriteOutput
-        thermal_capacity_mat=thermal_capacity(tissue_mat);
-        save(get_path('heat_capacity_mat'), 'thermal_capacity_mat', '-v7.3'); 
+        heat_capacity_mat=heat_capacity(tissue_mat);
+        save(get_path('heat_capacity_mat'), 'heat_capacity_mat', '-v7.3'); 
     end    
         
     if ~exist(get_path('perfusion_heatcapacity_mat'),'var') || overwriteOutput

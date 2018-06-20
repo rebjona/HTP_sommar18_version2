@@ -1,4 +1,4 @@
-function initial_perf_mat=create_initial_perf_nonlin(tissue_mat, perfusion_mat, modelType)
+function create_initial_perf_nonlin(tissue_mat, perfusion_mat, modelType)
 
 % Function that generates a matrix of the perfusion used for calculating
 % the very first temperature in CompletePennes. Here, the intial
@@ -8,10 +8,7 @@ function initial_perf_mat=create_initial_perf_nonlin(tissue_mat, perfusion_mat, 
 % from "Impact of Nonlinear Heat Transfer on Temperature Control in
 % Regional Hyperthermia" by Lang, Erdmann, Seebass
 
-% ladda in tissue mat och perf, ändra fat, skin, muscle till värdena i
-% artikeln istället
-
-T=37; %initial temp
+T=37; %assume initial temp
 
 initial_perf_mat=perfusion_mat;
 
@@ -37,5 +34,7 @@ elseif startsWith(modelType, 'child')
     initial_perf_mat(index_fat)=perf_fat;
     initial_perf_mat(index_tumor)=perf_tumor;  
 end
+
+save(get_path('initial_perf_mat'), 'initial_perf_mat', '-v7.3');
 
 end

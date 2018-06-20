@@ -7,9 +7,17 @@
 """
 
 import h5py
+import matlab.engine
+eng = matlab.engine.start_matlab()
+from scipy.io import loadmat
 
 from dolfin import *
 import numpy as np
+
+# NON_LINEAR PERFUSION vs CONSTANT PERFUSION
+# Define if you want to use the non-linear model(=True) of perfusion or constant values(=False)
+non_linear_perfusion=True
+
 
 # Load .mat parameter
 # The optional input argument 'degree' is FEniCS internal interpolation type.
@@ -65,8 +73,9 @@ P        = load_data("../Input_to_FEniCS/P.mat")
 
 T_b = Constant(0.0) # Blood temperature relative body temp
 k_tis    = load_data("../Input_to_FEniCS/thermal_cond.mat")
-rho= load_data("../Input_to_FEniCS/density.mat")
-c= load_data("../Input_to_FEniCS/heat_capacity.mat")
+#rho= load_data("../Input_to_FEniCS/density.mat")
+#c= load_data("../Input_to_FEniCS/heat_capacity.mat")
+tissue_mat = loadmat("../Input_to_FEniCS/tissue_mat.mat")
 
 # Load the w_c_b, depending on whether one wants to use linear perfusion data or non-linear perfusion data. TODO create the non-linear perfusion data and implement it in the Matlab code
 w_c_b    = load_data("../Input_to_FEniCS/perfusion_heatcapacity.mat") # This is the "standard" perfusion matrix with linear values
@@ -85,6 +94,14 @@ with open("../Input_to_FEniCS/ampLimit.txt") as file:
     ampLimit = []
     for line in file:
         ampLimit.append(line.rstrip().split(","))
+
+# Read model type
+with open("../Input_to_FEniCS/modelType.txt") as file:
+    modelType=[];
+    for line in file:
+        modelType.append(line.rstrip())
+
+print(modelType)
 
 print("Done loading.")
 
@@ -285,7 +302,8 @@ for i in range(numberOfP): # Outer loop for each HT plan one wants to include
         u_n=interpolate(u_IC,V)
 
     P=P*scale # Scale P according to previous calculations
-    F=dt*alpha*u*v*ds + c*rho*v*u*dx + dt*k_tis*dot(grad(u), grad(v))*dx - (c*rho*u_n + dt*(P-w_c_b*u))*v*dx - T_out_ht*v*ds
+#F=dt*alpha*u*v*ds + c*rho*v*u*dx + dt*k_tis*dot(grad(u), grad(v))*dx - (c*rho*u_n + dt*(P-w_c_b*u))*v*dx - T_out_ht*v*ds
+    F=dt*alpha*u*v*ds + v*u*dx + dt*k_tis*dot(grad(u), grad(v))*dx - (u_n + dt*(P-w_c_b*u))*v*dx - T_out_ht*v*ds
     #dt*alpha*u*v*ds + v*u*dx + dt*k_tis*dot(grad(u), grad(v))*dx - (u_n + dt*(P-w_c_b*u))*v*dx - T_out_ht*v*ds
     #alpha*u*v*dx + dt*k_tis*dot(grad(u), grad(v))*dx - (u_n + dt*(P-w_c_b*u))*v*dx + T_out_ht*v*ds
     a=lhs(F)
@@ -303,6 +321,7 @@ for i in range(numberOfP): # Outer loop for each HT plan one wants to include
         # Solve the system
         solve(a == L, u, solver_parameters={'linear_solver':'gmres'})   #might need to change from gmres to other solver?
         T =u.vector().array()
+        
         
         # Print the highest temperature
         print("Tmax for time step number " + str(int(t/dt)) + ":")
@@ -327,6 +346,10 @@ for i in range(numberOfP): # Outer loop for each HT plan one wants to include
             f.close()
             print("saved T for step: ")
             print(index)
+
+        # Estimate new matrix for perfusion if non_linear_perfusion=True
+        #if non_linear_perfusion
+        #   engine.generate_perfusion_nonlin()
 
     print("Time iteration finished for plan " + str(i+1))
 
